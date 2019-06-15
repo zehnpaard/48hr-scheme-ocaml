@@ -1,2 +1,3 @@
 (executable
-  (name ex))
+  (name ex)
+  (libraries lisp))
