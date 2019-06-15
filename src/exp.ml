@@ -14,5 +14,5 @@ let rec to_string = function
       let s = List.map to_string es |> String.concat " " in
       Printf.sprintf "(%s . %s)" s (to_string e)
   | Number n -> string_of_int n
-  | String s -> "\"" ^ s ^ "\""
+  | String s -> s
   | Bool b -> string_of_bool b
