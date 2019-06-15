@@ -1,1 +1,6 @@
-let _ = print_endline "Hello world"
+open Lisp
+
+let _ =
+  Lexing.from_channel stdin
+  |> Parser.f Lexer.f
+  |> ignore
