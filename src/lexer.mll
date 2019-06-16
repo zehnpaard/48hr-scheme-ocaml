@@ -12,7 +12,7 @@ let badatom = digit+ (symbol | char) (symbol | char | digit)*
 let string = '"' [^ '"']* '"'
 
 rule f = parse
-  | "'(" { QPAREN }
+  | "'" { QUOTE }
   | "(" { LPAREN }
   | ")" { RPAREN }
   | "." { DOT }
