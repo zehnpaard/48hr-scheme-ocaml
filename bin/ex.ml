@@ -20,4 +20,4 @@ let rec repl env =
   if s = "quit" then ()
   else (f env s; repl env)
 
-let _ = repl (Env.create ())
+let _ = repl (Env.create () |> Primitives.load)
