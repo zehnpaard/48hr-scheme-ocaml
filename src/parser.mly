@@ -1,9 +1,10 @@
 %token <int> INT
 %token <string> ATOM
 %token <string> STRING
-%token LPAREN RPAREN QPAREN
+%token LPAREN RPAREN
 %token DOT
 %token TRUE FALSE
+%token QUOTE
 %token EOF
 
 %start <Exp.t> f
@@ -20,4 +21,4 @@ expr :
   | FALSE { Exp.Bool false }
   | LPAREN; es = list(expr); RPAREN { Exp.List es }
   | LPAREN; es = list(expr); DOT; e = expr; RPAREN { Exp.DottedList (es, e) }
-  | QPAREN; es = list(expr); RPAREN { Exp.List (Exp.Atom "quote" :: es) }
+  | QUOTE; e = expr { Exp.List [Exp.Atom "quote"; e] }
