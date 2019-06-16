@@ -67,6 +67,10 @@ let rec f e = match e with
   | Number _ -> e
   | Bool _ -> e
   | List [Atom "quote"; e2] -> e2
+  | List [Atom "if"; e1, e2, e3] ->
+      (match f e1 with
+        | Bool false -> eval e3
+        | _ -> eval e2)
   | List (Atom func :: args) ->
       List.map f args
       |> apply func
