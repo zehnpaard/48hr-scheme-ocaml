@@ -18,10 +18,10 @@ rule f = parse
   | "." { DOT }
   | "true" { TRUE }
   | "false" { FALSE }
-  | badatom { failwith "Atoms cannot start with a digit" }
+  | badatom { raise @@ Exception.LexingFail "Atoms cannot start with a digit" }
   | atom as a { ATOM a }
   | int as n { INT (int_of_string n) }
   | string as s { STRING s }
   | whitespace* { f lexbuf }
   | eof { EOF }
-  | _ { failwith "Invalid char encountered while lexing" }
+  | _ { raise @@ Exception.LexingFail "Invalid char encountered while lexing" }
