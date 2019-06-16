@@ -16,7 +16,7 @@ f : e = expr; EOF { e }
 expr :
   | a = ATOM { Exp.Atom a }
   | n = INT { Exp.Number n }
-  | s = STRING { Exp.String s }
+  | s = STRING { Exp.String (String.sub s 1 (String.length s - 2)) }
   | TRUE { Exp.Bool true }
   | FALSE { Exp.Bool false }
   | LPAREN; es = list(expr); RPAREN { Exp.List es }
