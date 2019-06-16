@@ -16,7 +16,7 @@ let f s =
     | Exception.Default s -> Printf.printf "DefaultError %s\n" s
 
 let rec repl () =
-  let s = read_line () in
+  let s = (print_string "Lisp>>> "; read_line ()) in
   if s = "quit" then ()
   else (f s; repl ())
 
