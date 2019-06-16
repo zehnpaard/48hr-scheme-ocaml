@@ -36,6 +36,32 @@ let num_bool_binop = bool_binop to_int
 let str_bool_binop = bool_binop to_str
 let bool_bool_binop = bool_binop to_bool
 
+
+let car = function
+  | [List (x::_)] -> x
+  | [DottedList (x::_, _)] -> x
+  | [badarg] -> raise @@ Exception.TypeMismatch ("pair", Exp.to_str badarg)
+  | badargs ->
+      let n = List.length badargs in
+      raise @@ Exception.NumArgs (1, string_of_int n ^ " args")
+
+let cdr = function
+  | [List (_::xs)] -> xs
+  | [DottedList ([_], y)] -> y
+  | [DottedList (_::xs, y)] -> DottedList (xs, y)
+  | [badarg] -> raise @@ Exception.TypeMismatch ("pair", Exp.to_str badarg)
+  | badargs ->
+      let n = List.length badargs in
+      raise @@ Exception.NumArgs (1, string_of_int n ^ " args")
+
+let cons = function
+  | [x; List xs] -> List (x :: xs)
+  | [x; DottedList (xs, y)] -> DottedList (x :: xs, y)
+  | [x; y] -> DottedList ([x], y)
+  | badargs ->
+      let n = List.length badargs in
+      raise @@ Exception.NumArgs (2, string_of_int n ^ " args")
+
 module P = Map.Make(String)
 let primitives = P.empty
   |> P.add "+" (numeric_binop (+))
