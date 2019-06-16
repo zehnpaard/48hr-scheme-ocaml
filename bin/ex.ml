@@ -1,9 +1,9 @@
 open Lisp
 
-let f s =
+let f env s =
   try Lexing.from_string s
   |> Parser.f Lexer.f
-  |> Eval.f
+  |> Eval.f env
   |> Exp.to_string
   |> print_endline
   with
@@ -15,9 +15,9 @@ let f s =
     | Exception.UnboundVar (s1, s2) -> Printf.printf "UnboundVar %s %s\n" s1 s2
     | Exception.Default s -> Printf.printf "DefaultError %s\n" s
 
-let rec repl () =
+let rec repl env =
   let s = (print_string "Lisp>>> "; read_line ()) in
   if s = "quit" then ()
-  else (f s; repl ())
+  else (f env s; repl env)
 
-let _ = repl ()
+let _ = repl (Env.create ())

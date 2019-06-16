@@ -127,16 +127,21 @@ let apply func args = match P.find_opt func primitives with
   | None -> raise @@ Exception.NotFunction ("Unrecognized primitive function", func)
   | Some f -> f args
 
-let rec f e = match e with
+let rec f env e = match e with
   | String _ -> e
   | Number _ -> e
   | Bool _ -> e
-  | List [Atom "quote"; e2] -> e2
+  | Atom x -> Env.get_var env x
+  | List [Atom "quote"; e'] -> e'
   | List [Atom "if"; e1; e2; e3] ->
-      (match f e1 with
-        | Bool false -> f e3
-        | _ -> f e2)
+      (match f env e1 with
+        | Bool false -> f env e3
+        | _ -> f env e2)
+  | List [Atom "set!"; Atom v; e'] ->
+      f env e' |> Env.set_var env v
+  | List [Atom "define"; Atom v; e'] ->
+      f env e' |> Env.define_var env v
   | List (Atom func :: args) ->
-      List.map f args
+      List.map (f env) args
       |> apply func
   | bad -> raise @@ Exception.BadSpecialForm ("Unrecognized form", Exp.to_string bad)
