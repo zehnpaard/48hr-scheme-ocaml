@@ -2,13 +2,16 @@ open Exp
 
 let rec to_int = function
   | Number n -> n
-  | String s -> (try int_of_string s with Failure _ -> 0)
+  | String s ->
+      (try int_of_string s
+       with Failure _ -> raise @@ Exception.TypeMismatch ("number", s))
   | List [e] -> to_int e
-  | _ -> 0
+  | e -> raise @@ Exception.TypeMismatch ("number", Exp.to_string e)
 
 let numeric_binop op params =
   let n = match List.map to_int params with
-    | [] -> 0
+    | [] -> raise @@ Exception.NumArgs (2, "No args")
+    | [_] -> raise @@ Exception.NumArgs (2, "One arg")
     | x :: xs -> List.fold_left op x xs
   in
   Number n
@@ -22,7 +25,7 @@ let primitives = P.empty
   |> P.add "mod" (numeric_binop (mod))
 
 let apply func args = match P.find_opt func primitives with
-  | None -> Bool false
+  | None -> raise @@ Exception.NotFunction ("Unrecognized primitive function", func)
   | Some f -> f args
 
 let rec f e = match e with
@@ -33,4 +36,4 @@ let rec f e = match e with
   | List (Atom func :: args) ->
       List.map f args
       |> apply func
-  | _ -> failwith "Evaluation not implemented"
+  | bad -> raise @@ Exception.BadSpecialForm ("Unrecognized form", Exp.to_string bad)
