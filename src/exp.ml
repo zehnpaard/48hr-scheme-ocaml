@@ -1,9 +1,10 @@
-type t = Atom of string
-       | List of t list
-       | DottedList of t list * t
-       | Number of int
-       | String of string
-       | Bool of bool
+type t = Expenv.expt =
+  | Atom of string
+  | List of Expenv.expt list
+  | DottedList of Expenv.expt list * Expenv.expt
+  | Number of int
+  | String of string
+  | Bool of bool
 
 let rec to_string = function
   | Atom a -> a

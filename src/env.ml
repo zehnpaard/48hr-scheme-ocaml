@@ -1,5 +1,5 @@
-module M = Map.Make(String)
-type t = Exp.t M.t ref
+module M = Expenv.Envm
+type t = Expenv.envt
 
 let create () = (ref @@ M.empty : t)
 
