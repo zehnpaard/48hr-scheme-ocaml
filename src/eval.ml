@@ -20,6 +20,15 @@ let bind_args (fn : Exp.fn) args =
     | None -> bind_args' fn.params args fn.closure
     | Some varg -> bind_vargs' fn.params args varg fn.closure
 
+let make_func paratoms vargs body env =
+  let stringify_atom = function
+    | Atom s -> s
+    | e -> raise @@ Exception.TypeMismatch ("Function parameters must be atoms", to_string e)
+  in
+  Func {params=List.map stringify_atom paratoms;
+        varargs=vargs;
+        body=body;
+        closure=(Env.copy env)}
 
 let rec f env e = match e with
   | String _ -> e
@@ -35,6 +44,16 @@ let rec f env e = match e with
       f env e' |> Env.set_var env v
   | List [Atom "define"; Atom v; e'] ->
       f env e' |> Env.define_var env v
+  | List (Atom "define" :: List (Atom v::paratoms) :: body) ->
+      make_func paratoms None body env |> Env.define_var env v
+  | List (Atom "define" :: DottedList (Atom v::paratoms, Atom varg) :: body) ->
+      make_func paratoms (Some varg) body env |> Env.define_var env v
+  | List (Atom "lambda" :: List paratoms :: body) ->
+      make_func paratoms None body env
+  | List (Atom "lambda" :: DottedList (paratoms, Atom varg) :: body) ->
+      make_func paratoms (Some varg) body env
+  | List (Atom "lambda" :: Atom varg :: body) ->
+      make_func [] (Some varg) body env
   | List (head :: tail) ->
       let func = f env head in
       let args = List.map (f env) tail in
