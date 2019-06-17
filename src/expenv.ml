@@ -7,8 +7,9 @@ type expt = Atom of string
           | String of string
           | Bool of bool
           | PrimitiveFunc of (expt list -> expt)
-          | Func of {params : string list;
-                     varargs : string option;
-                     body : expt list;
-                     closure : envt}
+          | Func of fn
 and envt = expt Envm.t ref
+and fn = {params : string list;
+          varargs : string option;
+          body : expt list;
+          closure : envt}

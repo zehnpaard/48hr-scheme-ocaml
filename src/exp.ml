@@ -7,10 +7,13 @@ type t = E.expt =
   | String of string
   | Bool of bool
   | PrimitiveFunc of (E.expt list -> E.expt)
-  | Func of {params : string list;
-             varargs : string option;
-             body : E.expt list;
-             closure : E.envt}
+  | Func of E.fn
+
+type fn = E.fn =
+  {params : string list;
+   varargs : string option;
+   body : E.expt list;
+   closure : E.envt}
 
 let rec to_string = function
   | Atom a -> a
