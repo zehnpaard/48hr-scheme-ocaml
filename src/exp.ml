@@ -8,6 +8,8 @@ type t = E.expt =
   | Bool of bool
   | PrimitiveFunc of (E.expt list -> E.expt)
   | Func of E.fn
+  | PortIn of in_channel
+  | PortOut of out_channel
 
 type fn = E.fn =
   {params : string list;
@@ -34,3 +36,5 @@ let rec to_string = function
         | None -> "")
       in
       Printf.sprintf "(lambda (%s%s) ...)" paramss varargss
+  | PortIn _ -> "<IO Input Port>"
+  | PortOut _ -> "<IO Output Port>"

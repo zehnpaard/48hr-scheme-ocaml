@@ -122,3 +122,11 @@ let load env =
   |> add "eq?" eqv
   |> add "eqv?" eqv
   |> add "equal?" equal
+  |> add "open-input-file" Io.make_port_in
+  |> add "open-output-file" Io.make_port_out
+  |> add "close-input-file" Io.close_port_in
+  |> add "close-output-file" Io.close_port_out
+  |> add "read" Io.read_proc
+  |> add "write" Io.write_proc
+  |> add "read-contents" Io.read_contents
+  |> add "read-all" Io.read_all
