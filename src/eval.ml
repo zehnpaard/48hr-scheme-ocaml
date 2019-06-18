@@ -66,7 +66,12 @@ let rec f env e = match e with
       Func (make_func [] (Some varg) body env)
   | List [Atom "load"; String filename] ->
       Io.load filename |> List.map (f env) |> List.rev |> List.hd
-  | List (head :: tail) ->
+  | List [Atom "apply"; head; tail] ->
+      let func = f env head in
+      (match f env tail with
+         | List args -> apply func args
+         | arg -> apply func [arg])
+  | List (Atom "apply" :: head :: tail) | List (head :: tail) ->
       let func = f env head in
       let args = List.map (f env) tail in
       apply func args
