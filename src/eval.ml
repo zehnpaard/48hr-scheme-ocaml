@@ -17,8 +17,8 @@ let bind_args (fn : Exp.fn) args =
   if pcount != acount && fn.varargs = None
   then raise @@ Exception.NumArgs (pcount, "" ^ string_of_int acount)
   else match fn.varargs with
-    | None -> bind_args' fn.params args fn.closure
-    | Some varg -> bind_vargs' fn.params args varg fn.closure
+    | None -> bind_args' fn.params args (Env.copy fn.closure)
+    | Some varg -> bind_vargs' fn.params args varg (Env.copy fn.closure)
 
 let make_func paratoms vargs body env =
   let stringify_atom = function
@@ -28,7 +28,7 @@ let make_func paratoms vargs body env =
   {params=List.map stringify_atom paratoms;
    varargs=vargs;
    body=body;
-   closure=(Env.copy env)}
+   closure=env}
 
 let rec f env e = match e with
   | String _ -> e
@@ -45,19 +45,11 @@ let rec f env e = match e with
   | List [Atom "define"; Atom v; e'] ->
       f env e' |> Env.define_var env v
   | List (Atom "define" :: List (Atom v::paratoms) :: body) ->
-      let fn = make_func paratoms None body env in
-      let ffn = Func fn in
-      begin
-        ignore @@ Env.define_var fn.closure v ffn;
-        Env.define_var env v ffn
-      end
+      let fn = Func (make_func paratoms None body env) in
+      Env.define_var env v fn
   | List (Atom "define" :: DottedList (Atom v::paratoms, Atom varg) :: body) ->
-      let fn = make_func paratoms (Some varg) body env in
-      let ffn = Func fn in
-      begin
-        ignore @@ Env.define_var fn.closure v ffn;
-        Env.define_var env v ffn
-      end
+      let fn = Func (make_func paratoms (Some varg) body env) in
+      Env.define_var env v fn
   | List (Atom "lambda" :: List paratoms :: body) ->
       Func (make_func paratoms None body env)
   | List (Atom "lambda" :: DottedList (paratoms, Atom varg) :: body) ->
