@@ -10,7 +10,7 @@ type expt = Atom of string
           | Func of fn
           | PortIn of in_channel
           | PortOut of out_channel
-and envt = expt Envm.t ref
+and envt = (expt ref) Envm.t ref
 and fn = {params : string list;
           varargs : string option;
           body : expt list;

@@ -40,7 +40,10 @@ let bool_bool_binop = bool_binop to_bool
 let car = function
   | [List (x::_)] -> x
   | [DottedList (x::_, _)] -> x
-  | [badarg] -> raise @@ Exception.TypeMismatch ("pair", Exp.to_string badarg)
+  | [badarg] -> 
+      raise @@ Exception.TypeMismatch (
+          "car expects non-empty pair",
+          Exp.to_string badarg)
   | badargs ->
       let n = List.length badargs in
       raise @@ Exception.NumArgs (1, string_of_int n ^ " args")
@@ -49,7 +52,10 @@ let cdr = function
   | [List (_::xs)] -> List xs
   | [DottedList ([_], y)] -> y
   | [DottedList (_::xs, y)] -> DottedList (xs, y)
-  | [badarg] -> raise @@ Exception.TypeMismatch ("pair", Exp.to_string badarg)
+  | [badarg] ->
+      raise @@ Exception.TypeMismatch (
+          "cdr expects non-empty pair",
+          Exp.to_string badarg)
   | badargs ->
       let n = List.length badargs in
       raise @@ Exception.NumArgs (1, string_of_int n ^ " args")

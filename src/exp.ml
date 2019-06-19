@@ -27,7 +27,7 @@ let rec to_string = function
       Printf.sprintf "(%s . %s)" s (to_string e)
   | Number n -> string_of_int n
   | String s -> "\"" ^ s ^ "\""
-  | Bool b -> string_of_bool b
+  | Bool b -> if b then "#t" else "#f"
   | PrimitiveFunc _ -> "<primitive>"
   | Func f ->
       let paramss = String.concat " " f.params in
