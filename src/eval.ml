@@ -25,10 +25,10 @@ let make_func paratoms vargs body env =
     | Atom s -> s
     | e -> raise @@ Exception.TypeMismatch ("Function parameters must be atoms", to_string e)
   in
-  {params=List.map stringify_atom paratoms;
-   varargs=vargs;
-   body=body;
-   closure=env}
+  Func {params=List.map stringify_atom paratoms;
+        varargs=vargs;
+        body=body;
+        closure=env}
 
 let rec f env e = match e with
   | String _ -> e
@@ -45,17 +45,17 @@ let rec f env e = match e with
   | List [Atom "define"; Atom v; e'] ->
       f env e' |> Env.define_var env v
   | List (Atom "define" :: List (Atom v::paratoms) :: body) ->
-      let fn = Func (make_func paratoms None body env) in
+      let fn = make_func paratoms None body env in
       Env.define_var env v fn
   | List (Atom "define" :: DottedList (Atom v::paratoms, Atom varg) :: body) ->
-      let fn = Func (make_func paratoms (Some varg) body env) in
+      let fn = make_func paratoms (Some varg) body env in
       Env.define_var env v fn
   | List (Atom "lambda" :: List paratoms :: body) ->
-      Func (make_func paratoms None body env)
+      make_func paratoms None body env
   | List (Atom "lambda" :: DottedList (paratoms, Atom varg) :: body) ->
-      Func (make_func paratoms (Some varg) body env)
+      make_func paratoms (Some varg) body env
   | List (Atom "lambda" :: Atom varg :: body) ->
-      Func (make_func [] (Some varg) body env)
+      make_func [] (Some varg) body env
   | List [Atom "load"; String filename] ->
       Io.load filename |> List.map (f env) |> List.rev |> List.hd
   | List [Atom "apply"; head; tail] ->
