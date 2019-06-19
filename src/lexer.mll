@@ -16,8 +16,6 @@ rule f = parse
   | "(" { LPAREN }
   | ")" { RPAREN }
   | "." { DOT }
-  | "#t" { TRUE }
-  | "#f" { FALSE }
   | badatom { raise @@ Exception.LexingFail "Atoms cannot start with a digit" }
   | int as n { INT (int_of_string n) }
   | atom as a { ATOM a }
